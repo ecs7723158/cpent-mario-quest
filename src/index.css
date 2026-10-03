@@ -1,0 +1,270 @@
+:root {
+  --mario-sky: #5c94fc;
+  --mario-brick: #d84000;
+  --mario-block: #fcbc3c;
+  --mario-pipe: #00a800;
+  --mario-pipe-light: #00e800;
+  --mario-pipe-dark: #006000;
+  --mario-red: #e52521;
+  --mario-white: #ffffff;
+  --mario-black: #000000;
+
+  --bg-primary: #0a0c14;
+  --bg-card: rgba(16, 20, 32, 0.88);
+  --border-pixel: #000000;
+
+  --neon-cyan: #00f3ff;
+  --neon-purple: #bf00ff;
+  --neon-gold: #ffbe0b;
+
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-mono: 'Fira Code', monospace;
+  --font-body: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(92, 148, 252, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(229, 37, 33, 0.08) 0%, transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* CRT Scanlines Overlay */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 3px, 3px 100%;
+  opacity: 0.5;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--mario-block);
+  border: 2px solid #000;
+}
+
+/* 8-bit Mario Pixel Card */
+.pixel-box {
+  background: var(--bg-card);
+  border: 4px solid var(--border-pixel);
+  box-shadow: 
+    inset -4px -4px 0px 0px rgba(0, 0, 0, 0.6),
+    inset 4px 4px 0px 0px rgba(255, 255, 255, 0.15),
+    4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+  border-radius: 2px;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pixel-box-interactive {
+  cursor: pointer;
+}
+.pixel-box-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    inset -4px -4px 0px 0px rgba(0, 0, 0, 0.6),
+    inset 4px 4px 0px 0px rgba(255, 255, 255, 0.3),
+    6px 6px 0px 0px #000,
+    0 0 16px rgba(0, 243, 255, 0.3);
+}
+
+/* 8-bit Mario Buttons */
+.pixel-btn {
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  border: 4px solid #000;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+}
+
+.pixel-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000 !important;
+}
+
+.pixel-btn-red {
+  background: var(--mario-red);
+  color: #fff;
+  box-shadow: inset -3px -3px 0 #8a0c0a, inset 3px 3px 0 #ff7572, 4px 4px 0 #000;
+}
+.pixel-btn-red:hover:not(:disabled) {
+  background: #ff3b37;
+}
+
+.pixel-btn-gold {
+  background: var(--mario-block);
+  color: #000;
+  box-shadow: inset -3px -3px 0 #9c6c08, inset 3px 3px 0 #ffe082, 4px 4px 0 #000;
+}
+.pixel-btn-gold:hover:not(:disabled) {
+  background: #fed766;
+}
+
+.pixel-btn-green {
+  background: var(--mario-pipe-light);
+  color: #000;
+  box-shadow: inset -3px -3px 0 var(--mario-pipe-dark), inset 3px 3px 0 #70ff70, 4px 4px 0 #000;
+}
+.pixel-btn-green:hover:not(:disabled) {
+  background: #39ff39;
+}
+
+.pixel-btn-secondary {
+  background: #1e293b;
+  color: #cbd5e1;
+  box-shadow: inset -3px -3px 0 #0f172a, inset 3px 3px 0 #334155, 4px 4px 0 #000;
+}
+.pixel-btn-secondary:hover:not(:disabled) {
+  background: #334155;
+  color: #fff;
+}
+
+.pixel-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+/* Classic Question Mark [ ? ] Block */
+.mario-qblock {
+  width: 44px;
+  height: 44px;
+  background: var(--mario-block);
+  border: 4px solid #000;
+  box-shadow: 
+    inset -4px -4px 0 #b27a17, 
+    inset 4px 4px 0 #fff, 
+    4px 4px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+  animation: qBlockGlow 1.2s infinite alternate;
+}
+
+@keyframes qBlockGlow {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.2); }
+}
+
+/* Green Warp Pipe Styling */
+.mario-pipe-rim {
+  background: linear-gradient(90deg, #006000 0%, #00e800 35%, #00a800 70%, #004000 100%);
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  border-radius: 4px 4px 0 0;
+}
+
+.mario-pipe-body {
+  background: linear-gradient(90deg, #006000 0%, #00e800 35%, #00a800 70%, #004000 100%);
+  border-left: 4px solid #000;
+  border-right: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* Brick Block Texture */
+.mario-brick {
+  background-color: var(--mario-brick);
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.4) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(0,0,0,0.4) 2px, transparent 2px);
+  background-size: 16px 8px;
+  border: 3px solid #000;
+}
+
+/* Blinking Coin Animation */
+@keyframes coinSpin {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.15); }
+}
+
+.mario-coin {
+  display: inline-block;
+  color: var(--mario-block);
+  animation: coinSpin 0.9s infinite ease-in-out;
+}
+
+/* Overworld Level Node */
+.stage-node {
+  width: 52px;
+  height: 52px;
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.stage-node:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 6px 6px 0 #000;
+}
+
+.stage-node-cleared {
+  background: var(--mario-pipe-light);
+  color: #000;
+}
+
+.stage-node-active {
+  background: var(--mario-block);
+  color: #000;
+  animation: qBlockGlow 1s infinite alternate;
+}
+
+.stage-node-locked {
+  background: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* Container */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px;
+}

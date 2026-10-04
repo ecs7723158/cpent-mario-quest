@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, Monitor, ShoppingBag, BookOpen, Heart, Zap } from 'lucide-react';
+import { Volume2, VolumeX, Monitor, ShoppingBag, BookOpen } from 'lucide-react';
 import { MARIO_RANKS } from '../data/cpentData';
 import { soundCoin, soundClick } from '../utils/audio';
 

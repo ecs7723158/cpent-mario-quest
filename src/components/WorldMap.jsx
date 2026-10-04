@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MARIO_WORLDS } from '../data/cpentData';
-import { soundCoin, soundPipe, soundClick } from '../utils/audio';
+import { soundCoin, soundPipe } from '../utils/audio';
 
 export function WorldMap({ onSelectWorld, domainStats }) {
   const [selectedWorldId, setSelectedWorldId] = useState(MARIO_WORLDS[0].id);

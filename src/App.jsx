@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { MARIO_WORLDS, MARIO_SHOP_ITEMS } from './data/cpentData';
+import { MARIO_WORLDS } from './data/cpentData';
 import { Header } from './components/Header';
 import { WorldMap } from './components/WorldMap';
 import { BattleArena } from './components/BattleArena';
@@ -8,8 +8,8 @@ import { RadarChart } from './components/RadarChart';
 import { InventoryModal } from './components/InventoryModal';
 import { IncidentLogModal } from './components/IncidentLogModal';
 import { 
-  setSoundMuted, soundCoin, soundPowerUp, 
-  soundStageClear, soundClick, soundJump 
+  setSoundMuted, soundPowerUp, 
+  soundStageClear, soundClick 
 } from './utils/audio';
 
 const STORAGE_KEY = 'cpent_mario_rpg_state_v2';
@@ -33,7 +33,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         return parsed.player || defaultPlayer;
-      } catch (e) {}
+      } catch { /* ignore corrupt localStorage */ }
     }
     return defaultPlayer;
   });
@@ -44,7 +44,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         return parsed.inventory || [];
-      } catch (e) {}
+      } catch { /* ignore corrupt localStorage */ }
     }
     return [
       { id: 'item_mushroom', name: '超級紅蘑菇', count: 1 }
@@ -57,7 +57,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         return parsed.incidents || [];
-      } catch (e) {}
+      } catch { /* ignore corrupt localStorage */ }
     }
     return [];
   });
@@ -68,7 +68,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.domainStats) return parsed.domainStats;
-      } catch (e) {}
+      } catch { /* ignore corrupt localStorage */ }
     }
     const initial = {};
     MARIO_WORLDS.forEach(w => {

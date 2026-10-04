@@ -1,6 +1,6 @@
 import React from 'react';
 import { CPENT_ZONES } from '../data/cpentData';
-import { Network, Shuffle, Compass, Cpu, Terminal, Trophy, ChevronRight, Lock } from 'lucide-react';
+import { Network, Shuffle, Compass, Cpu, Terminal, Trophy, ChevronRight } from 'lucide-react';
 import { soundClick } from '../utils/audio';
 
 const iconMap = {
@@ -12,7 +12,7 @@ const iconMap = {
   Trophy: Trophy
 };
 
-export function ZoneSelector({ onSelectZone, domainStats, playerLevel }) {
+export function ZoneSelector({ onSelectZone, domainStats, playerLevel: _playerLevel }) {
   return (
     <div style={{ marginTop: '10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
@@ -31,7 +31,7 @@ export function ZoneSelector({ onSelectZone, domainStats, playerLevel }) {
         gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
         gap: '16px'
       }}>
-        {CPENT_ZONES.map((zone, index) => {
+        {CPENT_ZONES.map((zone, _index) => {
           const IconComponent = iconMap[zone.icon] || Network;
           const stat = domainStats[zone.id] || { solved: 0, total: zone.challenges.length };
           const isComplete = stat.solved >= stat.total && stat.total > 0;

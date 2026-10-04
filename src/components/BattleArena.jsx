@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ArrowLeft, CheckCircle2, XCircle, ChevronRight, Award, HelpCircle
+  ArrowLeft, CheckCircle2, XCircle, Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
-  soundCoin, soundJump, soundFireball, soundStomp, 
+  soundCoin, soundFireball, soundStomp, 
   soundDamage, soundAlarm, soundStageClear, soundPowerUp, soundClick 
 } from '../utils/audio';
 

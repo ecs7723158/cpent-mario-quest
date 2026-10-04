@@ -9,7 +9,7 @@ services:
     command: >
       sh -c "apk add --no-cache openssh-server nginx ncdu &&
              ssh-keygen -A &&
-             echo 'root:cpent123' | chpasswd &&
+             echo "root:${LAB_ROOT_PASSWORD:?set LAB_ROOT_PASSWORD}" | chpasswd &&
              sed -i 's/#Port 22/Port 49821/' /etc/ssh/sshd_config &&
              /usr/sbin/sshd &&
              echo '<h1>CPENT PERIMETER GATEWAY</h1><!-- flag{nmap_fast_port_discovery_49821_open} -->' > /var/lib/nginx/html/index.html &&
@@ -57,7 +57,7 @@ services:
       bash -c "apt-get update && apt-get install -y openssh-server sudo python3 &&
                mkdir /var/run/sshd &&
                useradd -m -s /bin/bash www-data-user &&
-               echo 'www-data-user:password' | chpasswd &&
+               echo "www-data-user:${LAB_USER_PASSWORD:?set LAB_USER_PASSWORD}" | chpasswd &&
                chmod u+s /usr/bin/find &&
                echo 'flag{suid_find_root_privesc_complete}' > /root/root.txt &&
                chmod 600 /root/root.txt &&

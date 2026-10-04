@@ -15,7 +15,7 @@ export function BattleArena({
   onExitArena,
   player,
   inventory,
-  useItem
+  onUseItem
 }) {
   const challenge = world.challenges[challengeIndex] || world.challenges[0];
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(null);
@@ -135,7 +135,7 @@ export function BattleArena({
     if (showHint || player.focus < 10) return;
     soundPowerUp();
     setShowHint(true);
-    useItem('spend_focus_hint', 10);
+    onUseItem('spend_focus_hint', 10);
     setBattleLogs(prev => [
       ...prev,
       `[🍄 問號磚塊開啟] 消耗 10 Focus 取得提示: ${challenge.hint}`
@@ -438,7 +438,7 @@ export function BattleArena({
               <button
                 className="pixel-btn pixel-btn-secondary"
                 disabled={player.hp >= player.maxHp}
-                onClick={() => { soundPowerUp(); useItem('item_mushroom'); }}
+                onClick={() => { soundPowerUp(); onUseItem('item_mushroom'); }}
                 style={{ padding: '6px 4px', fontSize: '0.55rem' }}
               >
                 🍄 補血 (+50 HP)
@@ -446,7 +446,7 @@ export function BattleArena({
               <button
                 className="pixel-btn pixel-btn-secondary"
                 disabled={player.focus >= player.maxFocus}
-                onClick={() => { soundPowerUp(); useItem('item_starman'); }}
+                onClick={() => { soundPowerUp(); onUseItem('item_starman'); }}
                 style={{ padding: '6px 4px', fontSize: '0.55rem' }}
               >
                 ⭐ 專注 (+35)

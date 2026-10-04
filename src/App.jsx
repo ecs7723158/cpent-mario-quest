@@ -361,7 +361,7 @@ export default function App() {
             onExitArena={handleExitArena}
             player={player}
             inventory={inventory}
-            useItem={handleUseItem}
+            onUseItem={handleUseItem}
           />
         )}
 

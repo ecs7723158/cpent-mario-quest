@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # WORLD 1 Target: Perimeter Recon Gateway
+  recon-target:
+    image: alpine:latest
+    container_name: cpent-recon-gateway
+    restart: always
+    command: >
+      sh -c "apk add --no-cache openssh-server nginx ncdu &&
+             ssh-keygen -A &&
+             echo 'root:cpent123' | chpasswd &&
+             sed -i 's/#Port 22/Port 49821/' /etc/ssh/sshd_config &&
+             /usr/sbin/sshd &&
+             echo '<h1>CPENT PERIMETER GATEWAY</h1><!-- flag{nmap_fast_port_discovery_49821_open} -->' > /var/lib/nginx/html/index.html &&
+             mkdir -p /run/nginx &&
+             nginx -g 'daemon off;'"
+    ports:
+      - "8080:80"
+      - "49821:49821"
+    networks:
+      cpent-net:
+        ipv4_address: 10.10.10.200
+
+  # WORLD 4 Target: Modbus TCP ICS PLC Simulator
+  modbus-plc:
+    image: python:3.10-alpine
+    container_name: cpent-modbus-simulator
+    restart: always
+    command: >
+      sh -c "pip install pymodbus &&
+             python -c '
+      from pymodbus.server import StartTcpServer
+      from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
+      store = ModbusSlaveContext(
+          di=ModbusSequentialDataBlock(0, [1]*10),
+          co=ModbusSequentialDataBlock(0, [1]*10),
+          hr=ModbusSequentialDataBlock(0, [165, 1000, 1, 0xCAFE, 0xBEEF]),
+          ir=ModbusSequentialDataBlock(0, [100]*10)
+      )
+      context = ModbusServerContext(slaves=store, single=True)
+      print(\"Starting Modbus TCP on 0.0.0.0:502...\")
+      StartTcpServer(context=context, address=(\"0.0.0.0\", 502))
+      '"
+    ports:
+      - "5020:502"
+    networks:
+      cpent-net:
+        ipv4_address: 10.10.10.204
+
+  # WORLD 6 Target: Linux SUID Privilege Escalation Lab
+  suid-privesc:
+    image: ubuntu:22.04
+    container_name: cpent-suid-privesc
+    restart: always
+    command: >
+      bash -c "apt-get update && apt-get install -y openssh-server sudo python3 &&
+               mkdir /var/run/sshd &&
+               useradd -m -s /bin/bash www-data-user &&
+               echo 'www-data-user:password' | chpasswd &&
+               chmod u+s /usr/bin/find &&
+               echo 'flag{suid_find_root_privesc_complete}' > /root/root.txt &&
+               chmod 600 /root/root.txt &&
+               /usr/sbin/sshd -D"
+    ports:
+      - "2222:22"
+    networks:
+      cpent-net:
+        ipv4_address: 10.10.10.206
+
+networks:
+  cpent-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24

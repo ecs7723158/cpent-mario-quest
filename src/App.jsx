@@ -7,12 +7,13 @@ import { BattleArena } from './components/BattleArena';
 import { RadarChart } from './components/RadarChart';
 import { InventoryModal } from './components/InventoryModal';
 import { IncidentLogModal } from './components/IncidentLogModal';
+import { DockerLabModal } from './components/DockerLabModal';
 import { 
   setSoundMuted, soundPowerUp, 
   soundStageClear, soundClick 
 } from './utils/audio';
 
-const STORAGE_KEY = 'cpent_mario_rpg_state_v2';
+const STORAGE_KEY = 'cpent_mario_rpg_state_v3';
 
 const defaultPlayer = {
   name: 'MARIO',
@@ -81,15 +82,19 @@ export default function App() {
   const [selectedWorld, setSelectedWorld] = useState(null);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
 
+  // New Modes: 'practice' (練習暗示教學區) vs 'exam' (實際考試模擬區)
+  const [gameMode, setGameMode] = useState('practice');
+
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isLogOpen, setIsLogOpen] = useState(false);
+  const [isDockerLabOpen, setIsDockerLabOpen] = useState(false);
   const [hasScanlines, setHasScanlines] = useState(true);
   const [muted, setMuted] = useState(false);
 
   useEffect(() => {
-    const stateToSave = { player, inventory, incidents, domainStats };
+    const stateToSave = { player, inventory, incidents, domainStats, gameMode };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [player, inventory, incidents, domainStats]);
+  }, [player, inventory, incidents, domainStats, gameMode]);
 
   const toggleSound = () => {
     const next = !muted;
@@ -122,8 +127,8 @@ export default function App() {
         // WORLD CLEARED!
         soundStageClear();
         confetti({
-          particleCount: 100,
-          spread: 80,
+          particleCount: 120,
+          spread: 90,
           origin: { y: 0.5 }
         });
         handleExitArena();
@@ -196,14 +201,13 @@ export default function App() {
 
       setPlayer(prev => {
         let newHp = prev.hp - damage;
-        // Check 1-UP Extra Life
         const has1Up = inventory.some(i => i.id === 'item_1up' && i.equipped);
         if (newHp <= 0) {
           if (has1Up) {
             newHp = 40;
             soundPowerUp();
           } else {
-            newHp = 20; // Keep Mario going for practice
+            newHp = 20; // Keep Mario alive for practice
           }
         }
         return { ...prev, hp: newHp };
@@ -312,8 +316,11 @@ export default function App() {
           toggleScanlines={toggleScanlines}
           openShop={() => setIsShopOpen(true)}
           openLog={() => setIsLogOpen(true)}
+          openDockerLab={() => setIsDockerLabOpen(true)}
           incidentCount={incidents.length}
           currentWorldName={selectedWorld ? selectedWorld.name : null}
+          gameMode={gameMode}
+          onToggleMode={(mode) => setGameMode(mode)}
         />
 
         {/* View Switching */}
@@ -361,7 +368,8 @@ export default function App() {
             onExitArena={handleExitArena}
             player={player}
             inventory={inventory}
-            onUseItem={handleUseItem}
+            useItem={handleUseItem}
+            gameMode={gameMode}
           />
         )}
 
@@ -381,6 +389,12 @@ export default function App() {
           incidents={incidents}
           onClearIncidents={() => setIncidents([])}
           onRetryChallenge={handleRetryChallenge}
+        />
+
+        <DockerLabModal 
+          isOpen={isDockerLabOpen}
+          onClose={() => setIsDockerLabOpen(false)}
+          currentWorld={selectedWorld || MARIO_WORLDS[0]}
         />
 
       </div>

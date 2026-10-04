@@ -1,7 +1,7 @@
-import React from 'react';
-import { Volume2, VolumeX, Monitor, ShoppingBag, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Volume2, VolumeX, Monitor, ShoppingBag, BookOpen, Server, Clock, Award } from 'lucide-react';
 import { MARIO_RANKS } from '../data/cpentData';
-import { soundCoin, soundClick } from '../utils/audio';
+import { soundCoin, soundClick, soundAlarm } from '../utils/audio';
 
 export function Header({
   player,
@@ -11,11 +11,32 @@ export function Header({
   toggleScanlines,
   openShop,
   openLog,
+  openDockerLab,
   incidentCount,
-  currentWorldName
+  currentWorldName,
+  gameMode, // 'practice' | 'exam'
+  onToggleMode
 }) {
   const currentRank = MARIO_RANKS.slice().reverse().find(r => player.level >= r.minLevel) || MARIO_RANKS[0];
   const hpPercent = Math.max(0, Math.min(100, (player.hp / player.maxHp) * 100));
+
+  // Exam mode 120-minute countdown simulation
+  const [examSeconds, setExamSeconds] = useState(7200);
+
+  useEffect(() => {
+    if (gameMode !== 'exam') return;
+    const interval = setInterval(() => {
+      setExamSeconds(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [gameMode]);
+
+  const formatTimer = (totalSec) => {
+    const hrs = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
 
   return (
     <header className="pixel-box" style={{ marginBottom: '20px', padding: '16px 20px', background: '#0b0f19' }}>
@@ -61,11 +82,19 @@ export function Header({
           </div>
         </div>
 
-        {/* Time / Focus */}
+        {/* Time / Exam Timer */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#94a3b8', fontSize: '0.65rem', marginBottom: '4px' }}>FOCUS</div>
-          <div style={{ color: 'var(--neon-cyan)', fontSize: '0.85rem' }}>
-            {player.focus} / {player.maxFocus}
+          <div style={{ color: '#94a3b8', fontSize: '0.65rem', marginBottom: '4px' }}>
+            {gameMode === 'exam' ? 'EXAM TIME' : 'FOCUS'}
+          </div>
+          <div style={{ color: gameMode === 'exam' ? 'var(--mario-red)' : 'var(--neon-cyan)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {gameMode === 'exam' ? (
+              <>
+                <Clock size={13} /> {formatTimer(examSeconds)}
+              </>
+            ) : (
+              `${player.focus} / ${player.maxFocus}`
+            )}
           </div>
         </div>
 
@@ -82,26 +111,29 @@ export function Header({
 
       </div>
 
-      {/* Secondary Controls & Action Drawer */}
+      {/* Secondary Controls & Mode Switcher */}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
         
-        {/* Title Rank Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="mario-qblock" style={{ width: '34px', height: '34px', fontSize: '0.85rem' }}>
-            ?
-          </div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.65rem', color: currentRank.color }}>
-              {currentRank.title}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '2px' }}>
-              CPENT 滲透闖關地下城 • 8-Bit Edition
-            </div>
-          </div>
+        {/* Mode Selector Toggle: Practice vs. Real Exam */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#040711', padding: '4px', border: '2px solid #1e293b' }}>
+          <button
+            onClick={() => { soundClick(); onToggleMode('practice'); }}
+            className={`pixel-btn ${gameMode === 'practice' ? 'pixel-btn-green' : 'pixel-btn-secondary'}`}
+            style={{ padding: '6px 10px', fontSize: '0.6rem' }}
+          >
+            🧪 練習暗示教學區
+          </button>
+          <button
+            onClick={() => { soundAlarm(); onToggleMode('exam'); }}
+            className={`pixel-btn ${gameMode === 'exam' ? 'pixel-btn-red' : 'pixel-btn-secondary'}`}
+            style={{ padding: '6px 10px', fontSize: '0.6rem' }}
+          >
+            🎯 實際考試模擬區
+          </button>
         </div>
 
         {/* Health bar visual */}
-        <div style={{ flex: '1 1 200px', maxWidth: '300px' }}>
+        <div style={{ flex: '1 1 180px', maxWidth: '240px' }}>
           <div style={{
             height: '14px',
             background: '#000',
@@ -117,14 +149,24 @@ export function Header({
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Docker Lab, Shop, Incidents, Audio */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           
+          <button 
+            className="pixel-btn pixel-btn-secondary"
+            onClick={() => { soundClick(); openDockerLab(); }}
+            title="HTB 實機靶機連線中樞 (Docker Compose)"
+            style={{ padding: '8px 10px', color: 'var(--neon-cyan)', borderColor: 'var(--neon-cyan)' }}
+          >
+            <Server size={14} />
+            <span>實機靶機</span>
+          </button>
+
           <button 
             className="pixel-btn pixel-btn-gold"
             onClick={() => { soundCoin(); openShop(); }}
             title="開啟奇諾比奧道具屋 (Shop)"
-            style={{ padding: '8px 12px' }}
+            style={{ padding: '8px 10px' }}
           >
             <ShoppingBag size={14} />
             <span>道具屋</span>
@@ -134,7 +176,7 @@ export function Header({
             className="pixel-btn pixel-btn-red"
             onClick={() => { soundClick(); openLog(); }}
             title="失誤庫巴手冊 (錯題本)"
-            style={{ padding: '8px 12px', position: 'relative' }}
+            style={{ padding: '8px 10px', position: 'relative' }}
           >
             <BookOpen size={14} />
             <span>錯題本</span>
